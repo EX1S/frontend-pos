@@ -5,33 +5,35 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("http://localhost:4000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      alert("Inicio de sesión exitoso ✅");
-      window.location.href = "/menu"; // redirige al menú principal
-    } else {
-      alert(data.message || "Usuario o contraseña incorrectas");
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        alert("Inicio de sesión exitoso ✅");
+        window.location.href = "/menu";
+      } else {
+        alert(data.message || "Usuario o contraseña incorrectas");
+      }
+    } catch (error) {
+      console.error("Error en la conexión:", error);
+      alert("No se pudo conectar con el servidor");
     }
-  } catch (error) {
-    console.error("Error en la conexión:", error);
-    alert("No se pudo conectar con el servidor");
-  }
-};
-
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
