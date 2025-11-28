@@ -36,10 +36,9 @@ export default function VentasPage() {
     "precio" | "cantidad" | "importe" | null
   >(null);
 
-  // 🔥 API BASE URL
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  //Cargar productos
+  // Cargar productos
   useEffect(() => {
     const cargar = async () => {
       try {
@@ -56,12 +55,11 @@ export default function VentasPage() {
     cargar();
   }, [API_URL]);
 
-  //Filtrar productos
   const productosFiltrados = productos.filter((p) =>
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  //Abrir modal
+  // Abrir modal
   const agregarProducto = (p: Producto) => {
     setProductoSeleccionado(p);
 
@@ -74,7 +72,7 @@ export default function VentasPage() {
     setShowModal(true);
   };
 
-  //Lógica reactiva del modal
+  // Actualización dinámica
   useEffect(() => {
     if (!ultimoEditado) return;
 
@@ -89,7 +87,7 @@ export default function VentasPage() {
     }
   }, [precioModal, cantidadModal, importeModal, ultimoEditado]);
 
-  //Confirmar producto
+  // Confirmar producto
   const confirmarProducto = () => {
     if (!productoSeleccionado) return;
 
@@ -109,18 +107,18 @@ export default function VentasPage() {
     setProductoSeleccionado(null);
   };
 
-  //Eliminar item
+  // Eliminar item
   const eliminarItem = (id: number) => {
     setCarrito(carrito.filter((i) => i.id !== id));
   };
 
-  //Calcular total
+  // Calcular total
   useEffect(() => {
     const t = carrito.reduce((sum, i) => sum + i.subtotal, 0);
     setTotal(t);
   }, [carrito]);
 
-  //Registrar venta
+  // Registrar venta
   const registrarVenta = async () => {
     if (carrito.length === 0) {
       alert("El carrito está vacío.");
@@ -161,7 +159,7 @@ export default function VentasPage() {
     <div className="p-8 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Registrar venta</h1>
 
-      {/*Buscar productos*/}
+      {/* BUSCADOR */}
       <div className="mb-6 flex gap-4">
         <input
           type="text"
@@ -172,7 +170,7 @@ export default function VentasPage() {
         />
       </div>
 
-      {/*Tabla de productos*/}
+      {/* TABLA DE PRODUCTOS */}
       <div className="overflow-x-auto mb-8 shadow rounded-xl border border-gray-300 bg-white">
         <table className="min-w-full text-gray-800">
           <thead>
@@ -186,11 +184,9 @@ export default function VentasPage() {
           <tbody>
             {productosFiltrados.map((p) => (
               <tr key={p.id} className="border-b hover:bg-gray-50">
-                <td className="py-2 px-4 text-gray-800">{p.nombre}</td>
-                <td className="py-2 px-4 text-gray-800">{p.unidad}</td>
-                <td className="py-2 px-4 text-gray-800">
-                  ${Number(p.precio).toFixed(2)}
-                </td>
+                <td className="py-2 px-4">{p.nombre}</td>
+                <td className="py-2 px-4">{p.unidad}</td>
+                <td className="py-2 px-4">${Number(p.precio).toFixed(2)}</td>
                 <td className="py-2 px-4">
                   <button
                     onClick={() => agregarProducto(p)}
@@ -205,7 +201,7 @@ export default function VentasPage() {
         </table>
       </div>
 
-      {/*Carrito*/}
+      {/* CARRITO */}
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Carrito</h2>
       <div className="overflow-x-auto shadow rounded-xl border border-gray-300 bg-white">
         <table className="min-w-full text-gray-800">
@@ -221,16 +217,10 @@ export default function VentasPage() {
           <tbody>
             {carrito.map((item) => (
               <tr key={item.id} className="border-b">
-                <td className="py-2 px-4 text-gray-800">{item.nombre}</td>
-                <td className="py-2 px-4 text-gray-800">
-                  {item.cantidad.toFixed(3)}
-                </td>
-                <td className="py-2 px-4 text-gray-800">
-                  ${Number(item.precio).toFixed(2)}
-                </td>
-                <td className="py-2 px-4 text-gray-800">
-                  ${Number(item.subtotal).toFixed(2)}
-                </td>
+                <td className="py-2 px-4">{item.nombre}</td>
+                <td className="py-2 px-4">{item.cantidad.toFixed(3)}</td>
+                <td className="py-2 px-4">${item.precio.toFixed(2)}</td>
+                <td className="py-2 px-4">${item.subtotal.toFixed(2)}</td>
                 <td className="py-2 px-4">
                   <button
                     onClick={() => eliminarItem(item.id)}
@@ -245,10 +235,10 @@ export default function VentasPage() {
         </table>
       </div>
 
-      {/*Total*/}
+      {/* TOTAL */}
       <div className="flex justify-end items-center mt-6 gap-6">
         <h2 className="text-2xl font-bold text-gray-800">
-          Total: ${Number(total).toFixed(2)}
+          Total: ${total.toFixed(2)}
         </h2>
         <button
           onClick={registrarVenta}
@@ -257,6 +247,93 @@ export default function VentasPage() {
           Registrar venta
         </button>
       </div>
+
+      {/* MODAL */}
+      {showModal && productoSeleccionado && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[380px] text-gray-800">
+            <h2 className="text-xl font-bold mb-4">
+              Agregar {productoSeleccionado.nombre}
+            </h2>
+
+            {/* Precio */}
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-1">Precio por unidad</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
+                  $
+                </span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={precioModal}
+                  onChange={(e) => {
+                    setPrecioModal(Number(e.target.value));
+                    setUltimoEditado("precio");
+                  }}
+                  className="w-full border border-gray-300 rounded-lg p-2 pl-6 focus:ring-2 focus:ring-red-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Cantidad */}
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-1">
+                Cantidad ({productoSeleccionado.unidad})
+              </label>
+              <input
+                type="number"
+                step="0.001"
+                min="0"
+                value={cantidadModal}
+                onChange={(e) => {
+                  setCantidadModal(Number(e.target.value));
+                  setUltimoEditado("cantidad");
+                }}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none"
+              />
+            </div>
+
+            {/* Importe */}
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-1">Importe total</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
+                  $
+                </span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={importeModal}
+                  onChange={(e) => {
+                    setImporteModal(Number(e.target.value));
+                    setUltimoEditado("importe");
+                  }}
+                  className="w-full border border-gray-300 rounded-lg p-2 pl-6 focus:ring-2 focus:ring-red-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmarProducto}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg"
+              >
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
