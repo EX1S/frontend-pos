@@ -13,16 +13,18 @@ export default function InventarioActualPage() {
   const [items, setItems] = useState<ItemInventario[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // MISMA CONFIGURACIÓN QUE EN PRODUCTOS
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
   const obtenerInventario = async () => {
     try {
-      const res = await fetch("http://localhost:4000/api/reportes/inventario", {
+      const res = await fetch(`${API_URL}/api/reportes/inventario`, {
         headers: {
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
 
       const data = await res.json();
-
       setItems(data.inventario || []);
     } catch (error) {
       console.error(error);
@@ -59,8 +61,12 @@ export default function InventarioActualPage() {
 
             <tbody>
               {items.map((item, i) => (
-                <tr key={i} className={`border-b border-white/10 
-                  ${item.existencia <= 5 ? "bg-red-800/40" : ""}`}>
+                <tr
+                  key={i}
+                  className={`border-b border-white/10 ${
+                    item.existencia <= 5 ? "bg-red-800/40" : ""
+                  }`}
+                >
                   <td className="py-2">{item.nombre}</td>
                   <td className="py-2">{item.existencia}</td>
                   <td className="py-2">${item.precio}</td>
