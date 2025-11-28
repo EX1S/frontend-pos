@@ -25,7 +25,6 @@ export default function VentasPage() {
   const [carrito, setCarrito] = useState<ItemVenta[]>([]);
   const [total, setTotal] = useState(0);
 
-  //Modal de venta--------------------------------
   const [showModal, setShowModal] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null);
@@ -37,14 +36,15 @@ export default function VentasPage() {
     "precio" | "cantidad" | "importe" | null
   >(null);
 
-  //---------------------------------------
+  // 🔥 API BASE URL
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
   //Cargar productos
   useEffect(() => {
     const cargar = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:4000/api/productos", {
+        const res = await fetch(`${API_URL}/api/productos`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -54,7 +54,7 @@ export default function VentasPage() {
       }
     };
     cargar();
-  }, []);
+  }, [API_URL]);
 
   //Filtrar productos
   const productosFiltrados = productos.filter((p) =>
@@ -129,7 +129,7 @@ export default function VentasPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/ventas", {
+      const res = await fetch(`${API_URL}/api/ventas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -257,95 +257,6 @@ export default function VentasPage() {
           Registrar venta
         </button>
       </div>
-
-      {/*Modal*/}
-      {showModal && productoSeleccionado && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[380px] text-gray-800">
-            <h2 className="text-xl font-bold mb-4">
-              Agregar {productoSeleccionado.nombre}
-            </h2>
-
-            {/*Precio*/}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Precio por unidad
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                  $
-                </span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={precioModal}
-                  onChange={(e) => {
-                    setPrecioModal(Number(e.target.value));
-                    setUltimoEditado("precio");
-                  }}
-                  className="w-full border border-gray-300 rounded-lg p-2 pl-6 focus:ring-2 focus:ring-red-500 outline-none"
-                />
-              </div>
-            </div>
-
-            {/*Cantidad*/}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">
-                Cantidad ({productoSeleccionado.unidad})
-              </label>
-              <input
-                type="number"
-                step="0.001"
-                min="0"
-                value={cantidadModal}
-                onChange={(e) => {
-                  setCantidadModal(Number(e.target.value));
-                  setUltimoEditado("cantidad");
-                }}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-red-500 outline-none"
-              />
-            </div>
-
-            {/*Importe*/}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-1">Importe total</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
-                  $
-                </span>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={importeModal}
-                  onChange={(e) => {
-                    setImporteModal(Number(e.target.value));
-                    setUltimoEditado("importe");
-                  }}
-                  className="w-full border border-gray-300 rounded-lg p-2 pl-6 focus:ring-2 focus:ring-red-500 outline-none"
-                />
-              </div>
-            </div>
-
-            {/*Botones*/}
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-lg"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmarProducto}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg"
-              >
-                Aceptar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
