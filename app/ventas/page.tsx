@@ -36,7 +36,8 @@ export default function VentasPage() {
     "precio" | "cantidad" | "importe" | null
   >(null);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  // 🔥 Corrección importante: NO fallback a localhost.
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
   // Cargar productos
   useEffect(() => {
@@ -59,7 +60,6 @@ export default function VentasPage() {
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  // Abrir modal
   const agregarProducto = (p: Producto) => {
     setProductoSeleccionado(p);
 
@@ -72,7 +72,6 @@ export default function VentasPage() {
     setShowModal(true);
   };
 
-  // Actualización dinámica
   useEffect(() => {
     if (!ultimoEditado) return;
 
@@ -87,7 +86,6 @@ export default function VentasPage() {
     }
   }, [precioModal, cantidadModal, importeModal, ultimoEditado]);
 
-  // Confirmar producto
   const confirmarProducto = () => {
     if (!productoSeleccionado) return;
 
@@ -107,18 +105,16 @@ export default function VentasPage() {
     setProductoSeleccionado(null);
   };
 
-  // Eliminar item
   const eliminarItem = (id: number) => {
     setCarrito(carrito.filter((i) => i.id !== id));
   };
 
-  // Calcular total
   useEffect(() => {
     const t = carrito.reduce((sum, i) => sum + i.subtotal, 0);
     setTotal(t);
   }, [carrito]);
 
-  // Registrar venta
+  // 🔥 Registrar venta (sin cambios, solamente usando el API_URL corregido)
   const registrarVenta = async () => {
     if (carrito.length === 0) {
       alert("El carrito está vacío.");
@@ -258,7 +254,9 @@ export default function VentasPage() {
 
             {/* Precio */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-1">Precio por unidad</label>
+              <label className="block text-gray-700 mb-1">
+                Precio por unidad
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600">
                   $
